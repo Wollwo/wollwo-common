@@ -12,6 +12,8 @@ poetry version major  #: 0.1.0 -> 1.1.0
 
 #: check with
 poetry version
+poetry list
+poetry config --list
 ```
 
 ### Build project
@@ -22,17 +24,46 @@ cd /path/to/project/custom_logging
 poetry build
 ```
 
+### New poetry Project
+```BASH
+poetry new test  #: create project
+cd test
+poetry env info  #: check project env info
+poetry env info --path
+poetry lock      #: Locks the project dependencies
+```
+
+```BASH
+#: deactivate creation of ENVs
+poetry config virtualenvs.create false
+```
+
+### add/remove library to dependency
+```BASH
+poetry add package_name
+poetry add package_name@0.1.0   #: exact version
+poetry add package_name@^0.1.0  #: greater version than 0.1.0, but less than next major version 1.0.0
+poetry add package_name@<0.1.0  #: lesser version than specified
+poetry remove package_name
+
+poetry add --dev pacckage       #: add package necessary only for development
+```
+
 ### install project with poetry as python library
 ```BASH
 cd /path/to/project/custom_logging
 poetry install
 ```
 
-### add/remove library to dependency
+### Check information about packages
 ```BASH
-poetry add package_name
-poetry add package_name@0.1.0  #: exact version
-poetry add package_name@^0.1.0  #: greater version than 0.1.0, but less than next major version 1.0.0
-poetry add package_name@<0.1.0  #: lesser version than specified
-poetry remove package_name
+poetry show
+poetry show package
+poetry show | awk '{print $1"="$2}'  #: export current dependency versions
+poetry show -T | awk '{print $1"="$2}'  #: Top level dependencies
+```
+
+### Activate ENV
+```BASH
+poetry env activate
 ```
