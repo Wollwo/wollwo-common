@@ -55,7 +55,7 @@ class ExceptException:
     silence_exc: bool = field(default=False)
 
     #: internal attributes not meant to be changed
-    __expected_exception: Exception = field(default=Exception, init=False, repr=False)
+    _expected_exception: Exception = field(default=Exception, init=False, repr=False)
     __rep: int = field(default=30, init=False, repr=False)
 
     def __enter__(self):
@@ -64,13 +64,15 @@ class ExceptException:
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         """Exception handling and other cleaning tasks"""
-        if exc_type is self.__expected_exception:
-            self.__internal_logger('error', f'{str(exc_type)}{exc_value}')
+        # if exc_type is self.__expected_exception:
+        if isinstance(exc_type(), self._expected_exception):
+            self.__internal_logger('error', f'{str(exc_type)}: {exc_value}')
 
             if self.print_trace:
                 self.__print_traceback(exc_type, exc_value, exc_tb)
 
             if self.exit_on_exc:
+                self.__internal_logger('error', f'{str(exc_type)}: Exiting with {self.exit_code}')
                 sys.exit(self.exit_code)
 
             return self.silence_exc if isinstance(self.silence_exc, bool) else False
