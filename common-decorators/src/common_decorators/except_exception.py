@@ -12,7 +12,7 @@ from logging import Logger
 from typing import Optional, Type
 
 __all__ = [
-    'ExceptExceptionBase'
+    'ExceptException'
 ]
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 
@@ -44,7 +44,8 @@ class ExceptException:
             silence exception
 
     Exceptions:
-        TypeError
+        TypeError: raised by:
+            - __setattr__()
     """
 
     qualname: str = field(default_factory=lambda: ExceptException.__init__.__qualname__)
@@ -64,18 +65,35 @@ class ExceptException:
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         """Exception handling and other cleaning tasks"""
-        # if exc_type is self.__expected_exception:
-        if isinstance(exc_type(), self._expected_exception):
-            self.__internal_logger('error', f'{str(exc_type)}: {exc_value}')
 
-            if self.print_trace:
-                self.__print_traceback(exc_type, exc_value, exc_tb)
+        #: Check for excepted exception
+        if exc_type is not None:
+            if (isinstance(exc_type(), BaseException) and
+                    exc_type.__name__ == self._expected_exception.__name__
+            ):
+                #: logger
+                self.__internal_logger('error', f'{exc_type.__name__}: {exc_value}')
 
-            if self.exit_on_exc:
-                self.__internal_logger('error', f'{str(exc_type)}: Exiting with {self.exit_code}')
-                sys.exit(self.exit_code)
+                #: Traceback
+                if self.print_trace:
+                    self.__print_traceback(exc_type, exc_value, exc_tb)
 
-            return self.silence_exc if isinstance(self.silence_exc, bool) else False
+                #: Exit
+                if self.exit_on_exc:
+                    self.__internal_logger('error', f'{exc_type.__name__}: Exiting with {self.exit_code}')
+                    sys.exit(self.exit_code)
+
+                #: ToDo: check possibility to return some value if there is exception
+                #: ToDo:    some code injection ?
+                #: ToDo:    what should be done if there is exception
+                #: ToDo:    setattr(CM, 'd') -> with CM.something
+                #: ToDo:    decorator will have in post_init setattr() tied to attribute
+
+                #: silence
+                return self.silence_exc if isinstance(self.silence_exc, bool) else False
+
+
+            self.__internal_logger('debug', f'Passing on raised exception: "{exc_type.__name__}:{exc_value}"')
         pass
 
     def __call__(self, func):
@@ -134,6 +152,9 @@ class ExceptException:
         return
 
     def __print_traceback(self, exc_type, exc_value, traceback_obj):
+        """
+        print captured traceback
+        """
         print(f'{"=" * self.__rep} Traceback START {"=" * self.__rep}')
         traceback.print_exception(exc_type, exc_value, traceback_obj)
         print(f'{"=" * (self.__rep + 1)} Traceback END {"=" * (self.__rep + 1)}')
