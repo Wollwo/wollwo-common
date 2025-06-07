@@ -12,19 +12,19 @@ from logging import Logger
 from typing import Optional, Type
 
 __all__ = [
-    'ExceptException'
+    'ExceptBaseException'
 ]
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------
 @dataclass
-class ExceptException:
+class ExceptBaseException:
     """
-    Context manager / Decorator for excepting TypeError.
+    Context manager / Decorator for excepting BaseException.
     It will pass through any other type of exception
 
-    Handles "TypeError" Exception:
+    Handles "BaseException" Exception:
       - exit on exception
       - silence exception
       - print traceback on exception
@@ -45,10 +45,10 @@ class ExceptException:
 
     Exceptions:
         TypeError: raised by:
-            - __setattr__()
+            - __setattr__() on provided wrong attribute Type
     """
 
-    qualname: str = field(default_factory=lambda: ExceptException.__init__.__qualname__)
+    qualname: str = field(default_factory=lambda: ExceptBaseException.__init__.__qualname__)
     custom_logger: Optional[Logger] = None
     exit_code: int = field(default=1)
     exit_on_exc: bool = field(default=False)
@@ -56,7 +56,7 @@ class ExceptException:
     silence_exc: bool = field(default=False)
 
     #: internal attributes not meant to be changed
-    _expected_exception: Exception = field(default=Exception, init=False, repr=False)
+    _expected_exception: BaseException = field(default=BaseException, init=False, repr=False)
     __rep: int = field(default=30, init=False, repr=False)
 
     def __enter__(self):
