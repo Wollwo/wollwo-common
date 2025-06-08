@@ -9,7 +9,7 @@ import traceback
 from dataclasses import dataclass, field, fields
 from functools import wraps
 from logging import Logger
-from typing import Optional, Type
+from typing import Optional, Any
 
 __all__ = [
     'ExceptBaseException'
@@ -33,6 +33,9 @@ class ExceptBaseException:
         qualname (str):
         custom_logger (Logger): Default None
             logger which should be used to log/print messages
+        execute_on_exc (bool): Default False
+            if True, it will execute self.execution_list()
+            executed after logger and before trace
         exit_code (int): Default 1
             provide exit code, from 0-255
         exit_on_exc (bool): Default False
@@ -40,8 +43,9 @@ class ExceptBaseException:
             if True, silence_exc will not be executed
         print_trace (bool): Default True
             will print traceback before raisin/exiting/silencing exception
+            print trace just before exit or silence
         silence_exc (bool): Default False
-            silence exception
+            silence exception, if not exited first
 
     Exceptions:
         TypeError: raised by:
@@ -50,6 +54,7 @@ class ExceptBaseException:
 
     qualname: str = field(default_factory=lambda: ExceptBaseException.__init__.__qualname__)
     custom_logger: Optional[Logger] = None
+    execute_on_exc: bool = field(default=False)
     exit_code: int = field(default=1)
     exit_on_exc: bool = field(default=False)
     print_trace: bool = field(default=True)
@@ -74,6 +79,9 @@ class ExceptBaseException:
                 #: logger
                 self.__internal_logger('error', f'{exc_type.__name__}: {exc_value}')
 
+                if self.execute_on_exc:
+                    self.execution_list()
+
                 #: Traceback
                 if self.print_trace:
                     self.__print_traceback(exc_type, exc_value, exc_tb)
@@ -83,7 +91,7 @@ class ExceptBaseException:
                     self.__internal_logger('error', f'{exc_type.__name__}: Exiting with {self.exit_code}')
                     sys.exit(self.exit_code)
 
-                #: ToDo: check possibility to return some value if there is exception
+                #: ToDo: 01 - check possibility to return some value if there is exception
                 #: ToDo:    some code injection ?
                 #: ToDo:    what should be done if there is exception
                 #: ToDo:    setattr(CM, 'd') -> with CM.something
@@ -158,6 +166,9 @@ class ExceptBaseException:
         print(f'{"=" * self.__rep} Traceback START {"=" * self.__rep}')
         traceback.print_exception(exc_type, exc_value, traceback_obj)
         print(f'{"=" * (self.__rep + 1)} Traceback END {"=" * (self.__rep + 1)}')
+
+    def execution_list(self) -> Any:
+        raise NotImplemented()
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
 

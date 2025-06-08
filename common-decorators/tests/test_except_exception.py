@@ -18,7 +18,6 @@ from logging import Logger
 
 from common_decorators.except_exception import ExceptBaseException
 
-
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 
 
@@ -53,6 +52,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
+        execute_on_exc=False,  #: Not Implemented
         exit_code=1,
         exit_on_exc=False,
         print_trace=True,
@@ -68,6 +68,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
+        execute_on_exc=False,  #: Not Implemented
         exit_code=1,
         exit_on_exc=False,
         print_trace=False,
@@ -85,6 +86,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
+        execute_on_exc=False,  #: Not Implemented
         exit_code=10,
         exit_on_exc=True,
         print_trace=False,
@@ -116,6 +118,7 @@ def capture_output():
     finally:
         sys.stdout, sys.stderr = old_out, old_err
 
+
 def base_method(exc: int) -> int:
     """
     Method to raise exceptions to test ExceptException
@@ -140,9 +143,11 @@ def base_method(exc: int) -> int:
         print(f'Dummy print {exc}')
         raise ValueError(f'Dummy ValueError {exc}')
 
+
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
+    execute_on_exc=False,  #: Not Implemented
     exit_code=1,
     exit_on_exc=False,
     print_trace=True,
@@ -159,6 +164,7 @@ def method_01_default_values(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
+    execute_on_exc=False,  #: Not Implemented
     exit_code=1,
     exit_on_exc=False,
     print_trace=False,
@@ -177,6 +183,7 @@ def method_02_notrace_silence(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
+    execute_on_exc=False,  #: Not Implemented
     exit_code=10,
     exit_on_exc=True,
     print_trace=False,
@@ -209,6 +216,7 @@ def test_exceptexception_class_as_method_decorator_01(exc_value, capsys):
     #: #################################
     #: No Exception
     #: #################################
+
     if exc_value == 0:
         result1 = method_01_default_values(exc_value)
         test_class = BaseClass()
@@ -228,6 +236,7 @@ def test_exceptexception_class_as_method_decorator_01(exc_value, capsys):
     #: #################################
     #: Exception
     #: #################################
+
     elif exc_value == 1:
         with pytest.raises(BaseException) as exc_info:
             method_01_default_values(exc_value)
@@ -263,10 +272,10 @@ def test_exceptexception_class_as_method_decorator_01(exc_value, capsys):
         assert (captured.out.splitlines()[4] ==
                 f'=============================== Traceback END ===============================')
 
-
     #: #################################
     #: ValueError
     #: #################################
+
     elif exc_value == 2:
         with pytest.raises(ValueError) as exc_info:
             method_01_default_values(exc_value)
@@ -508,27 +517,460 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
     """
     testing ExceptException
 
-    method_01_default_values
+    base_method in context manager with default values
     """
-    pass
+
+    #: #################################
+    #: No Exception
+    #: #################################
+
+    if exc_value == 0:
+        with ExceptBaseException(
+                qualname='WithContextManager.test',
+                custom_logger=None,
+                execute_on_exc=False,  #: Not Implemented
+                exit_code=1,
+                exit_on_exc=False,
+                print_trace=True,
+                silence_exc=False
+        ):
+            result1 = base_method(exc_value)
+            test_class = BaseClass()
+            result2 = test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert result1 == 0
+        assert result2 == 0
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Dummy print 0'
+        assert captured.out.splitlines()[1] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[2] == f'Dummy print 0'
+
+    #: #################################
+    #: Exception
+    #: #################################
+
+    elif exc_value == 1:
+        with pytest.raises(BaseException) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=True,
+                    silence_exc=False
+            ):
+                base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy Exception 1"
+        assert len(captured.out.splitlines()) == 4
+        assert captured.out.splitlines()[0] == f'Dummy print 1'
+        assert captured.out.splitlines()[1] == f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1'
+        assert (captured.out.splitlines()[2] ==
+                f'============================== Traceback START ==============================')
+        assert (captured.out.splitlines()[3] ==
+                f'=============================== Traceback END ===============================')
+
+        with pytest.raises(BaseException) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=True,
+                    silence_exc=False
+            ):
+                test_class = BaseClass()
+                test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy Exception 1"
+        assert len(captured.out.splitlines()) == 5
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 1'
+        assert captured.out.splitlines()[2] == f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1'
+        assert (captured.out.splitlines()[3] ==
+                f'============================== Traceback START ==============================')
+        assert (captured.out.splitlines()[4] ==
+                f'=============================== Traceback END ===============================')
+
+    #: #################################
+    #: ValueError
+    #: #################################
+
+    elif exc_value == 2:
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=True,
+                    silence_exc=False
+            ):
+                base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 2'
+        assert (captured.out.splitlines()[1] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
+
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=True,
+                    silence_exc=False
+            ):
+                test_class = BaseClass()
+                test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 2'
+        assert (captured.out.splitlines()[2] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
 
 
 def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
     """
     testing ExceptException
 
-    method_02_notrace_silence
+    base_method in context manager with no trace and silence excepted exception
     """
-    pass
+
+    #: #################################
+    #: No Exception
+    #: #################################
+
+    if exc_value == 0:
+        with ExceptBaseException(
+                qualname='WithContextManager.test',
+                custom_logger=None,
+                execute_on_exc=False,  #: Not Implemented
+                exit_code=1,
+                exit_on_exc=False,
+                print_trace=False,
+                silence_exc=True
+        ):
+            result1 = base_method(exc_value)
+            test_class = BaseClass()
+            result2 = test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert result1 == 0
+        assert result2 == 0
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Dummy print 0'
+        assert captured.out.splitlines()[1] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[2] == f'Dummy print 0'
+
+    #: #################################
+    #: Exception
+    #: #################################
+
+    elif exc_value == 1:
+        with ExceptBaseException(
+                qualname='WithContextManager.test',
+                custom_logger=None,
+                execute_on_exc=False,  #: Not Implemented
+                exit_code=1,
+                exit_on_exc=False,
+                print_trace=False,
+                silence_exc=True
+        ):
+            result3 = base_method(exc_value)
+            assert result3 is None
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 1'
+        assert captured.out.splitlines()[1] == f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1'
+
+        with ExceptBaseException(
+                qualname='WithContextManager.test',
+                custom_logger=None,
+                execute_on_exc=False,  #: Not Implemented
+                exit_code=1,
+                exit_on_exc=False,
+                print_trace=False,
+                silence_exc=True
+        ):
+            test_class = BaseClass()
+            result4 = test_class.base_method(exc_value)
+            assert result4 is None
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 1'
+        assert (captured.out.splitlines()[2] ==
+                f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1')
+
+    #: #################################
+    #: ValueError
+    #: #################################
+
+    elif exc_value == 2:
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=False,
+                    silence_exc=True
+            ):
+                base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 2'
+        assert (captured.out.splitlines()[1] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
+
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=1,
+                    exit_on_exc=False,
+                    print_trace=False,
+                    silence_exc=True
+            ):
+                test_class = BaseClass()
+                test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 2'
+        assert (captured.out.splitlines()[2] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
 
 
 def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
     """
     testing ExceptException
 
-    method_03_notrace_exit
+    base_method in context manager with no trace and exit on exception
     """
-    pass
+
+    #: #################################
+    #: No Exception
+    #: #################################
+
+    if exc_value == 0:
+        with ExceptBaseException(
+                qualname='WithContextManager.test',
+                custom_logger=None,
+                execute_on_exc=False,  #: Not Implemented
+                exit_code=10,
+                exit_on_exc=True,
+                print_trace=False,
+                silence_exc=False
+        ):
+            result1 = base_method(exc_value)
+            test_class = BaseClass()
+            result2 = test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert result1 == 0
+        assert result2 == 0
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Dummy print 0'
+        assert captured.out.splitlines()[1] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[2] == f'Dummy print 0'
+
+    #: #################################
+    #: Exception
+    #: #################################
+
+    elif exc_value == 1:
+        #: test if Exit code is correct
+        with pytest.raises(SystemExit) as excinfo:
+            with capture_output():
+                with ExceptBaseException(
+                        qualname='WithContextManager.test',
+                        custom_logger=None,
+                        execute_on_exc=False,  #: Not Implemented
+                        exit_code=10,
+                        exit_on_exc=True,
+                        print_trace=False,
+                        silence_exc=False
+                ):
+                    base_method(exc_value)
+
+        #: Assert
+        assert excinfo.value.code == 10
+
+        #: test all outputs are correct
+        with pytest.raises(SystemExit) as excinfo:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=10,
+                    exit_on_exc=True,
+                    print_trace=False,
+                    silence_exc=False
+            ):
+                base_method(exc_value)
+
+        # Capture the output
+        captured = capsys.readouterr()
+
+        # Assert
+        assert excinfo.type is SystemExit
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Dummy print 1'
+        assert (captured.out.splitlines()[1] ==
+                f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1')
+        assert captured.out.splitlines()[2] == f'ERROR: WithContextManager.test : BaseException: Exiting with 10'
+
+        #: test if Exit code is correct
+        with pytest.raises(SystemExit) as excinfo:
+            with capture_output():
+                with ExceptBaseException(
+                        qualname='WithContextManager.test',
+                        custom_logger=None,
+                        execute_on_exc=False,  #: Not Implemented
+                        exit_code=10,
+                        exit_on_exc=True,
+                        print_trace=False,
+                        silence_exc=False
+                ):
+                    test_class = BaseClass()
+                    test_class.base_method(exc_value)
+
+        #: Assert
+        assert excinfo.value.code == 10
+
+        #: test all outputs are correct
+        with pytest.raises(SystemExit) as excinfo:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=10,
+                    exit_on_exc=True,
+                    print_trace=False,
+                    silence_exc=False
+            ):
+                test_class = BaseClass()
+                test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert excinfo.type is SystemExit
+        assert len(captured.out.splitlines()) == 4
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 1'
+        assert (captured.out.splitlines()[2] ==
+                f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1')
+        assert captured.out.splitlines()[
+                   3] == f'ERROR: WithContextManager.test : BaseException: Exiting with 10'
+
+    #: #################################
+    #: ValueError
+    #: #################################
+
+    elif exc_value == 2:
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=10,
+                    exit_on_exc=True,
+                    print_trace=False,
+                    silence_exc=False
+            ):
+                base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 2'
+        assert (captured.out.splitlines()[1] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
+
+        with pytest.raises(ValueError) as exc_info:
+            with ExceptBaseException(
+                    qualname='WithContextManager.test',
+                    custom_logger=None,
+                    execute_on_exc=False,  #: Not Implemented
+                    exit_code=10,
+                    exit_on_exc=True,
+                    print_trace=False,
+                    silence_exc=False
+            ):
+                test_class = BaseClass()
+                test_class.base_method(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 3
+        assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
+        assert captured.out.splitlines()[1] == f'Dummy print 2'
+        assert (captured.out.splitlines()[2] ==
+                f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
 
 
 #: ------------------------------------------------- BODY --------------------------------------------------
