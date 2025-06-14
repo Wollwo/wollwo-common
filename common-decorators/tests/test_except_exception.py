@@ -533,7 +533,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                 exit_on_exc=False,
                 print_trace=True,
                 silence_exc=False
-        ):
+        ) as test1:
             result1 = base_method(exc_value)
             test_class = BaseClass()
             result2 = test_class.base_method(exc_value)
@@ -545,6 +545,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         assert result1 == 0
         assert result2 == 0
         assert len(captured.out.splitlines()) == 3
+        assert not test1.exception_responses
         assert captured.out.splitlines()[0] == f'Dummy print 0'
         assert captured.out.splitlines()[1] == f'Name: BaseClass.base_method, Test: True'
         assert captured.out.splitlines()[2] == f'Dummy print 0'
@@ -563,7 +564,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_on_exc=False,
                     print_trace=True,
                     silence_exc=False
-            ):
+            ) as test2:
                 base_method(exc_value)
 
         #: capture print() output
@@ -572,6 +573,11 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         #: Assert
         assert str(exc_info.value) == "Dummy Exception 1"
         assert len(captured.out.splitlines()) == 4
+        assert len(test2.exception_responses) == 1
+        assert test2.exception_responses[0] == {
+            'exception': BaseException,
+            'response': 'BaseException: Dummy Exception 1'
+        }
         assert captured.out.splitlines()[0] == f'Dummy print 1'
         assert captured.out.splitlines()[1] == f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1'
         assert (captured.out.splitlines()[2] ==
@@ -588,7 +594,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_on_exc=False,
                     print_trace=True,
                     silence_exc=False
-            ):
+            ) as test3:
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
 
@@ -598,6 +604,11 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         #: Assert
         assert str(exc_info.value) == "Dummy Exception 1"
         assert len(captured.out.splitlines()) == 5
+        assert len(test3.exception_responses) == 1
+        assert test3.exception_responses[0] == {
+            'exception': BaseException,
+            'response': 'BaseException: Dummy Exception 1'
+        }
         assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
         assert captured.out.splitlines()[1] == f'Dummy print 1'
         assert captured.out.splitlines()[2] == f'ERROR: WithContextManager.test : BaseException: Dummy Exception 1'
@@ -620,7 +631,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_on_exc=False,
                     print_trace=True,
                     silence_exc=False
-            ):
+            ) as test4:
                 base_method(exc_value)
 
         #: capture print() output
@@ -629,6 +640,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         #: Assert
         assert str(exc_info.value) == "Dummy ValueError 2"
         assert len(captured.out.splitlines()) == 2
+        assert not test4.exception_responses
         assert captured.out.splitlines()[0] == f'Dummy print 2'
         assert (captured.out.splitlines()[1] ==
                 f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')

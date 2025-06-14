@@ -59,6 +59,10 @@ class ExceptBaseException:
     exit_on_exc: bool = field(default=False)
     print_trace: bool = field(default=True)
     silence_exc: bool = field(default=False)
+    exception_responses: list = field(
+        default_factory=list,
+        init=False
+    )
 
     #: internal attributes not meant to be changed
     _expected_exception: BaseException = field(default=BaseException, init=False, repr=False)
@@ -76,8 +80,20 @@ class ExceptBaseException:
             if (isinstance(exc_type(), BaseException) and
                     exc_type.__name__ == self._expected_exception.__name__
             ):
+                #: prepare silence
+                silence = self.silence_exc if isinstance(self.silence_exc, bool) else False
+
+                #: prepare response
+                text = f'{exc_type.__name__}: {exc_value}'
+                self.exception_responses.append(
+                    {
+                        'exception': self._expected_exception,
+                        'response': text
+                    }
+                )
+
                 #: logger
-                self.__internal_logger('error', f'{exc_type.__name__}: {exc_value}')
+                self.__internal_logger('error', text)
 
                 if self.execute_on_exc:
                     self.execution_list()
@@ -97,8 +113,7 @@ class ExceptBaseException:
                 #: ToDo:    setattr(CM, 'd') -> with CM.something
                 #: ToDo:    decorator will have in post_init setattr() tied to attribute
 
-                #: silence
-                return self.silence_exc if isinstance(self.silence_exc, bool) else False
+                return silence
 
 
             self.__internal_logger('debug', f'Passing on raised exception: "{exc_type.__name__}:{exc_value}"')
