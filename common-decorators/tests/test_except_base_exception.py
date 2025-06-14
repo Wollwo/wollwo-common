@@ -16,7 +16,7 @@ from logging import Logger
 #: Add the src directory to the Python path
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from common_decorators.except_exception import ExceptBaseException
+from common_decorators.except_base_exception import ExceptBaseException
 
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 
@@ -56,7 +56,8 @@ class BaseClass:
         exit_code=1,
         exit_on_exc=False,
         print_trace=True,
-        silence_exc=False
+        silence_exc=False,
+        pass_exc=False
     )
     def method_01_default_values(self, exc: int) -> int:
         """
@@ -72,7 +73,8 @@ class BaseClass:
         exit_code=1,
         exit_on_exc=False,
         print_trace=False,
-        silence_exc=True
+        silence_exc=True,
+        pass_exc=False
     )
     def method_02_notrace_silence(self, exc: int) -> int:
         """
@@ -90,7 +92,8 @@ class BaseClass:
         exit_code=10,
         exit_on_exc=True,
         print_trace=False,
-        silence_exc=False
+        silence_exc=False,
+        pass_exc=False
     )
     def method_03_notrace_exit(self, exc: int) -> int:
         """
@@ -101,6 +104,26 @@ class BaseClass:
             - exit code set to 10
         """
         return self.base_method(exc)
+
+    @ExceptBaseException(
+        qualname='ExceptException.__init__',
+        custom_logger=None,
+        execute_on_exc=True,  #: Not ImplementedError
+        exit_code=1,
+        exit_on_exc=False,
+        print_trace=False,
+        silence_exc=False,
+        pass_exc=False
+    )
+    def method_04_execute_and_pass(self, exc: int) -> int:
+        """
+        Method to raise exceptions to test ExceptException
+        default values changed for:
+            - traceback will not be printed
+            - excepted exception will be passed
+            - before passing execution will be performed
+        """
+        return base_method(exc)
 
 
 
@@ -151,7 +174,8 @@ def base_method(exc: int) -> int:
     exit_code=1,
     exit_on_exc=False,
     print_trace=True,
-    silence_exc=False
+    silence_exc=False,
+    pass_exc=False
 )
 def method_01_default_values(exc: int) -> int:
     """
@@ -168,7 +192,8 @@ def method_01_default_values(exc: int) -> int:
     exit_code=1,
     exit_on_exc=False,
     print_trace=False,
-    silence_exc=True
+    silence_exc=True,
+    pass_exc=False
 )
 def method_02_notrace_silence(exc: int) -> int:
     """
@@ -187,7 +212,8 @@ def method_02_notrace_silence(exc: int) -> int:
     exit_code=10,
     exit_on_exc=True,
     print_trace=False,
-    silence_exc=False
+    silence_exc=False,
+    pass_exc=False
 )
 def method_03_notrace_exit(exc: int) -> int:
     """
@@ -196,6 +222,26 @@ def method_03_notrace_exit(exc: int) -> int:
         - traceback will not be printed
         - Before re-raising excepted Exception, sys.exit() will be called
         - exit code set to 10
+    """
+    return base_method(exc)
+
+@ExceptBaseException(
+    qualname='ExceptException.__init__',
+    custom_logger=None,
+    execute_on_exc=True,  #: Not ImplementedError
+    exit_code=1,
+    exit_on_exc=False,
+    print_trace=False,
+    silence_exc=False,
+    pass_exc=False
+)
+def method_04_execute_and_pass(exc: int) -> int:
+    """
+    Method to raise exceptions to test ExceptException
+    default values changed for:
+        - traceback will not be printed
+        - excepted exception will be passed
+        - before passing execution will be performed
     """
     return base_method(exc)
 
@@ -532,7 +578,8 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=True,
-                silence_exc=False
+                silence_exc=False,
+                pass_exc=False
         ) as test1:
             result1 = base_method(exc_value)
             test_class = BaseClass()
@@ -563,7 +610,8 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ) as test2:
                 base_method(exc_value)
 
@@ -593,7 +641,8 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ) as test3:
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
@@ -630,7 +679,8 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ) as test4:
                 base_method(exc_value)
 
@@ -653,7 +703,8 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ):
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
@@ -689,7 +740,8 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
-                silence_exc=True
+                silence_exc=True,
+                pass_exc=False
         ):
             result1 = base_method(exc_value)
             test_class = BaseClass()
@@ -718,7 +770,8 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
-                silence_exc=True
+                silence_exc=True,
+                pass_exc=False
         ):
             result3 = base_method(exc_value)
             assert result3 is None
@@ -738,7 +791,8 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
-                silence_exc=True
+                silence_exc=True,
+                pass_exc=False
         ):
             test_class = BaseClass()
             result4 = test_class.base_method(exc_value)
@@ -767,7 +821,8 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=False,
-                    silence_exc=True
+                    silence_exc=True,
+                    pass_exc=False
             ):
                 base_method(exc_value)
 
@@ -789,7 +844,8 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=False,
-                    silence_exc=True
+                    silence_exc=True,
+                    pass_exc=False
             ):
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
@@ -825,7 +881,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                 exit_code=10,
                 exit_on_exc=True,
                 print_trace=False,
-                silence_exc=False
+                silence_exc=False,
+                pass_exc=False
         ):
             result1 = base_method(exc_value)
             test_class = BaseClass()
@@ -857,7 +914,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                         exit_code=10,
                         exit_on_exc=True,
                         print_trace=False,
-                        silence_exc=False
+                        silence_exc=False,
+                        pass_exc=False
                 ):
                     base_method(exc_value)
 
@@ -873,7 +931,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ):
                 base_method(exc_value)
 
@@ -898,7 +957,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                         exit_code=10,
                         exit_on_exc=True,
                         print_trace=False,
-                        silence_exc=False
+                        silence_exc=False,
+                        pass_exc=False
                 ):
                     test_class = BaseClass()
                     test_class.base_method(exc_value)
@@ -915,7 +975,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ):
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
@@ -946,7 +1007,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ):
                 base_method(exc_value)
 
@@ -968,7 +1030,8 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
-                    silence_exc=False
+                    silence_exc=False,
+                    pass_exc=False
             ):
                 test_class = BaseClass()
                 test_class.base_method(exc_value)
@@ -984,6 +1047,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
         assert (captured.out.splitlines()[2] ==
                 f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError:Dummy ValueError 2"')
 
+#: [ ] ToDo: Add tests for execute and pass excepted Exception
 
 #: ------------------------------------------------- BODY --------------------------------------------------
 if __name__ == '__main__':

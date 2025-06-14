@@ -46,6 +46,12 @@ class ExceptBaseException:
             print trace just before exit or silence
         silence_exc (bool): Default False
             silence exception, if not exited first
+            Your code will be stopped at place where exception will be raised naturally
+            if you have more code to be executed think about passing exception
+        pass_exc (bool): Default False
+            exception will be passed (not raised, not silenced)
+        exception_responses (list)
+            each excepted exception will be logged to list of dicts
 
     Exceptions:
         TypeError: raised by:
@@ -59,6 +65,7 @@ class ExceptBaseException:
     exit_on_exc: bool = field(default=False)
     print_trace: bool = field(default=True)
     silence_exc: bool = field(default=False)
+    pass_exc: bool = field(default=False)
     exception_responses: list = field(
         default_factory=list,
         init=False
@@ -107,14 +114,9 @@ class ExceptBaseException:
                     self.__internal_logger('error', f'{exc_type.__name__}: Exiting with {self.exit_code}')
                     sys.exit(self.exit_code)
 
-                #: ToDo: 01 - check possibility to return some value if there is exception
-                #: ToDo:    some code injection ?
-                #: ToDo:    what should be done if there is exception
-                #: ToDo:    setattr(CM, 'd') -> with CM.something
-                #: ToDo:    decorator will have in post_init setattr() tied to attribute
-
-                return silence
-
+                #: silence or raise if not passed
+                if not self.pass_exc:
+                    return silence
 
             self.__internal_logger('debug', f'Passing on raised exception: "{exc_type.__name__}:{exc_value}"')
         pass
@@ -126,6 +128,8 @@ class ExceptBaseException:
 
         @wraps(func)
         def wrapper(*args, **kwargs):
+            # with self as context_self:
+            #     return func(context_self, *args, **kwargs)
             with self:
                 return func(*args, **kwargs)
 
@@ -183,7 +187,7 @@ class ExceptBaseException:
         print(f'{"=" * (self.__rep + 1)} Traceback END {"=" * (self.__rep + 1)}')
 
     def execution_list(self) -> Any:
-        raise NotImplemented()
+        raise NotImplementedError()
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
 
