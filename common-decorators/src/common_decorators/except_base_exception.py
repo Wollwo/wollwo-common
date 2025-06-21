@@ -33,6 +33,7 @@ class ExceptBaseException:
         qualname (str):
         custom_logger (Logger): Default None
             logger which should be used to log/print messages
+            (from logging library)
         execute_on_exc (bool): Default False
             if True, it will execute self.execution_list()
             executed after logger and before trace
@@ -66,10 +67,15 @@ class ExceptBaseException:
     print_trace: bool = field(default=True)
     silence_exc: bool = field(default=False)
     pass_exc: bool = field(default=False)
+
+    #: Changeable instance values, not meant for init
     exception_responses: list = field(
         default_factory=list,
         init=False
     )
+    level: str = field(default='error', init=False)
+
+
 
     #: internal attributes not meant to be changed
     _expected_exception: BaseException = field(default=BaseException, init=False, repr=False)
@@ -94,13 +100,13 @@ class ExceptBaseException:
                 text = f'{exc_type.__name__}: {exc_value}'
                 self.exception_responses.append(
                     {
-                        'exception': self._expected_exception,
+                        'exception': self._expected_exception.__name__,
                         'response': text
                     }
                 )
 
                 #: logger
-                self.__internal_logger('error', text)
+                self.__internal_logger(self.level, text)
 
                 if self.execute_on_exc:
                     self.execution_list()
@@ -168,13 +174,29 @@ class ExceptBaseException:
                 printed
         """
 
+        expected_values = ['debug', 'info', 'warning', 'error', 'critical']
+
         if self.custom_logger is None:
-            expected_values = ['debug', 'info', 'warning', 'error', 'critical']
             level = level.upper() if level.lower() in expected_values else 'INFO'
 
             text = str(text)
 
             print(f'{level}: {self.qualname} : {text}')
+
+        else:
+            match level.lower():
+                case 'debug':
+                    self.custom_logger.debug(f'{text}')
+                case 'info':
+                    self.custom_logger.info(f'{text}')
+                case 'warning':
+                    self.custom_logger.warning(f'{text}')
+                case 'error':
+                    self.custom_logger.error(f'{text}')
+                case 'critical':
+                    self.custom_logger.critical(f'{text}')
+                case _:
+                    raise ValueError(f'Value of "level" must be one of [{", ".join(expected_values)}]')
 
         return
 

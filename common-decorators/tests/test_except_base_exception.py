@@ -623,7 +623,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         assert len(captured.out.splitlines()) == 4
         assert len(test2.exception_responses) == 1
         assert test2.exception_responses[0] == {
-            'exception': BaseException,
+            'exception': 'BaseException',
             'response': 'BaseException: Dummy Exception 1'
         }
         assert captured.out.splitlines()[0] == f'Dummy print 1'
@@ -655,7 +655,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         assert len(captured.out.splitlines()) == 5
         assert len(test3.exception_responses) == 1
         assert test3.exception_responses[0] == {
-            'exception': BaseException,
+            'exception': 'BaseException',
             'response': 'BaseException: Dummy Exception 1'
         }
         assert captured.out.splitlines()[0] == f'Name: BaseClass.base_method, Test: True'
