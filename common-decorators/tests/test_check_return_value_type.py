@@ -34,7 +34,7 @@ def test_checkreturnvaluetype_class_as_decorator():
     result1 = test(000000)
     assert result1 == 000000
 
-    with pytest.raises(TypeError, match="Expected return type <class 'int'>, got <class 'str'>"):
+    with pytest.raises(TypeError, match="Expected return type \"<class 'int'>\", got \"<class 'str'>\""):
         test('string')
 
     #: use_annotation=True
@@ -48,7 +48,7 @@ def test_checkreturnvaluetype_class_as_decorator():
     assert result1 == 000000
     assert result2 == 'string'
 
-    with pytest.raises(TypeError, match=re.escape("Expected return type typing.Union[str, int], got <class 'list'>")):
+    with pytest.raises(TypeError, match=re.escape("Expected return type \"typing.Union[str, int]\", got \"<class 'list'>\"")):
         test(['string', 000000])
 
 
@@ -64,7 +64,7 @@ def test_checkreturnvaluetype_class_as_contextmanager():
         result1 = crvt.check(test, 000000)
     assert result1 == 000000
 
-    with pytest.raises(TypeError, match=re.escape("Expected return type <class 'int'>, got <class 'str'>")):
+    with pytest.raises(TypeError, match=re.escape("Expected return type \"<class 'int'>\", got \"<class 'str'>\"")):
         with CheckReturnValueType(int) as crvt:
             crvt.check(test, 'string')
 
@@ -76,7 +76,7 @@ def test_checkreturnvaluetype_class_as_contextmanager():
     assert result1 == 000000
     assert result2 == 'string'
 
-    with pytest.raises(TypeError, match=re.escape("Expected return type typing.Union[str, int], got <class 'list'>")):
+    with pytest.raises(TypeError, match=re.escape("Expected return type \"typing.Union[str, int]\", got \"<class 'list'>\"")):
         with CheckReturnValueType(int, use_annotation=True) as crvt:
             crvt.check(test, ['string', 000000])
 

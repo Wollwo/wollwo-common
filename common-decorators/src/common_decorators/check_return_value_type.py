@@ -5,7 +5,7 @@ All rights reserved.
 #: ------------------------------------------------ IMPORTS ------------------------------------------------
 from functools import wraps
 from inspect import isfunction
-from typing import Any, Tuple, Type
+from typing import Any, Type
 
 __all__ = [
     'CheckReturnValueType'
@@ -53,7 +53,12 @@ class CheckReturnValueType:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """You can perform cleanup actions here if needed"""
-        pass
+
+        #: Check for excepted exception
+        if exc_type is not None:
+            if (isinstance(exc_type(), TypeError)
+                    and exc_type.__name__ == TypeError.__name__):
+                return False
 
     def check(self, func, *args, **kwargs):
         """
@@ -64,7 +69,7 @@ class CheckReturnValueType:
             func
         """
         if not isfunction(func):
-            raise TypeError(f'Expected "func" to be callable function, got {type(func).__name__}')
+            raise TypeError(f'Expected "func" to be callable function, got "{type(func).__name__}"')
 
         #: check if __annotation__ are provided and self.use_annotation=True
         expected_func_type = self.expected_type
@@ -78,7 +83,7 @@ class CheckReturnValueType:
         if not isinstance(result, expected_func_type):
             # if self.raise_exception:
             #     raise TypeError(f"Expected return type {self.expected_type}, got {type(result)}")
-            raise TypeError(f"Expected return type {expected_func_type}, got {type(result)}")
+            raise TypeError(f'Expected return type "{expected_func_type}", got "{type(result)}"')
 
         return result
 

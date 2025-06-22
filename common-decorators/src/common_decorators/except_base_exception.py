@@ -75,8 +75,6 @@ class ExceptBaseException:
     )
     level: str = field(default='error', init=False)
 
-
-
     #: internal attributes not meant to be changed
     _expected_exception: BaseException = field(default=BaseException, init=False, repr=False)
     __rep: int = field(default=30, init=False, repr=False)
