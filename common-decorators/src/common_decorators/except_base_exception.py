@@ -109,22 +109,41 @@ class ExceptBaseException:
                 self.__internal_logger(self.level, text)
 
                 if self.execute_on_exc:
+                    self.__internal_logger(
+                        'debug',
+                        f'{exc_type.__name__}: Executing custom program'
+                    )
                     self.execution_list()
 
                 #: Traceback
                 if self.print_trace:
+                    self.__internal_logger(
+                        'debug',
+                        f'{exc_type.__name__}: Printing trace of "{exc_type.__name__}"'
+                    )
                     self.__print_traceback(exc_type, exc_value, exc_tb)
 
                 #: Exit
                 if self.exit_on_exc:
-                    self.__internal_logger('error', f'{exc_type.__name__}: Exiting with {self.exit_code}')
+                    self.__internal_logger(
+                        'error',
+                        f'{exc_type.__name__}: Exiting with {self.exit_code}'
+                    )
                     sys.exit(self.exit_code)
 
                 #: silence or raise if not passed
                 if not self.pass_exc:
+                    if silence:
+                        self.__internal_logger(
+                            'debug',
+                            f'{exc_type.__name__}: Silencing excepted exception "{exc_type.__name__}"'
+                        )
                     return silence
 
-            self.__internal_logger('debug', f'Passing on raised exception: "{exc_type.__name__}:{exc_value}"')
+            self.__internal_logger(
+                'debug',
+                f'Passing on raised exception: "{exc_type.__name__}: {exc_value}"'
+            )
         pass
 
     def __call__(self, func):
@@ -177,7 +196,7 @@ class ExceptBaseException:
         expected_values = ['debug', 'info', 'warning', 'error', 'critical']
 
         if self.custom_logger is None:
-            level = level.upper() if level.lower() in expected_values else 'INFO'
+            level = level.upper() if level.lower() in expected_values else 'ERROR'
 
             text = str(text)
 
