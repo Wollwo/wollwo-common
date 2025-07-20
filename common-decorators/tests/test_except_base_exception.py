@@ -18,12 +18,17 @@ from logging import Logger
 
 from common_decorators.except_base_exception import ExceptBaseException
 
+
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
+def dummy_execution(text: str, *args, **kwargs):
+    """Dummy method do be provided and tested if executed"""
+    print(f"printing: {text}")
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------
 class BaseClass:
     test: bool = True
+
     def base_method(self, exc: int) -> int:
         """
         Method to raise exceptions to test ExceptException
@@ -52,7 +57,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
-        execute_on_exc=False,  #: Not Implemented
+        execute_on_exc=None,
         exit_code=1,
         exit_on_exc=False,
         print_trace=True,
@@ -69,7 +74,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
-        execute_on_exc=False,  #: Not Implemented
+        execute_on_exc=None,
         exit_code=1,
         exit_on_exc=False,
         print_trace=False,
@@ -88,7 +93,7 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
-        execute_on_exc=False,  #: Not Implemented
+        execute_on_exc=None,
         exit_code=10,
         exit_on_exc=True,
         print_trace=False,
@@ -108,12 +113,13 @@ class BaseClass:
     @ExceptBaseException(
         qualname='ExceptException.__init__',
         custom_logger=None,
-        execute_on_exc=True,  #: Not ImplementedError
+        execute_on_exc=dummy_execution,
+        execute_on_exc_params=(['Dummy'],),
         exit_code=1,
         exit_on_exc=False,
         print_trace=False,
         silence_exc=False,
-        pass_exc=False
+        pass_exc=True
     )
     def method_04_execute_and_pass(self, exc: int) -> int:
         """
@@ -124,7 +130,6 @@ class BaseClass:
             - before passing execution will be performed
         """
         return base_method(exc)
-
 
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
@@ -170,7 +175,8 @@ def base_method(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
-    execute_on_exc=False,  #: Not Implemented
+    execute_on_exc=None,
+    execute_on_exc_params=None,
     exit_code=1,
     exit_on_exc=False,
     print_trace=True,
@@ -188,7 +194,8 @@ def method_01_default_values(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
-    execute_on_exc=False,  #: Not Implemented
+    execute_on_exc=None,
+    execute_on_exc_params=None,
     exit_code=1,
     exit_on_exc=False,
     print_trace=False,
@@ -208,7 +215,8 @@ def method_02_notrace_silence(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
-    execute_on_exc=False,  #: Not Implemented
+    execute_on_exc=None,
+    execute_on_exc_params=None,
     exit_code=10,
     exit_on_exc=True,
     print_trace=False,
@@ -228,12 +236,13 @@ def method_03_notrace_exit(exc: int) -> int:
 @ExceptBaseException(
     qualname='ExceptException.__init__',
     custom_logger=None,
-    execute_on_exc=True,  #: Not ImplementedError
+    execute_on_exc=dummy_execution,
+    execute_on_exc_params=(['Dummy'], {}),
     exit_code=1,
     exit_on_exc=False,
     print_trace=False,
     silence_exc=False,
-    pass_exc=False
+    pass_exc=True
 )
 def method_04_execute_and_pass(exc: int) -> int:
     """
@@ -568,6 +577,88 @@ def test_exceptexception_class_as_method_decorator_03(exc_value, capsys):
                 f'"ValueError: Dummy ValueError 2"')
 
 
+def test_exceptexception_class_as_method_decorator_04(exc_value, capsys):
+    """
+    testing ExceptException
+
+    method_04_execute_and_pass
+    """
+
+    #: #################################
+    #: No Exception
+    #: #################################
+
+    if exc_value == 0:
+        result1 = method_04_execute_and_pass(exc_value)
+        test_class = BaseClass()
+        result2 = test_class.method_04_execute_and_pass(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert result1 == 0
+        assert result2 == 0
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 0'
+        assert captured.out.splitlines()[1] == f'Dummy print 0'
+
+    #: #################################
+    #: Exception
+    #: #################################
+
+    elif exc_value == 1:
+        #: test custom method execution and passing Exception
+        with pytest.raises(BaseException, match='Dummy Exception 1'):
+            result3 = method_04_execute_and_pass(exc_value)
+
+        #: Capture the output
+        captured = capsys.readouterr()
+        assert len(captured.out.splitlines()) == 5
+        assert captured.out.splitlines()[0] == f'Dummy print 1'
+        assert (captured.out.splitlines()[1] ==
+                f'ERROR: method_04_execute_and_pass : BaseException: Dummy Exception 1')
+        assert (captured.out.splitlines()[2] ==
+                f'DEBUG: method_04_execute_and_pass : BaseException: Executing custom method')
+        assert (captured.out.splitlines()[3] ==
+                f'printing: Dummy')
+        assert (captured.out.splitlines()[4] ==
+                f'DEBUG: method_04_execute_and_pass : Passing on raised exception: "BaseException: Dummy Exception 1"')
+
+    #: #################################
+    #: ValueError
+    #: #################################
+
+    elif exc_value == 2:
+        with pytest.raises(ValueError) as exc_info:
+            method_04_execute_and_pass(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 2'
+        assert (captured.out.splitlines()[1] ==
+                f'DEBUG: method_04_execute_and_pass : Passing on raised exception: "ValueError: Dummy ValueError 2"')
+
+        with pytest.raises(ValueError) as exc_info:
+            test_class = BaseClass()
+            test_class.method_04_execute_and_pass(exc_value)
+
+        #: capture print() output
+        captured = capsys.readouterr()
+
+        #: Assert
+        assert str(exc_info.value) == "Dummy ValueError 2"
+        assert len(captured.out.splitlines()) == 2
+        assert captured.out.splitlines()[0] == f'Dummy print 2'
+        assert (captured.out.splitlines()[1] ==
+                f'DEBUG: BaseClass.method_04_execute_and_pass : Passing on raised exception: '
+                f'"ValueError: Dummy ValueError 2"')
+
+
 def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
     """
     testing ExceptException
@@ -583,7 +674,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
         with ExceptBaseException(
                 qualname='WithContextManager.test',
                 custom_logger=None,
-                execute_on_exc=False,  #: Not Implemented
+                execute_on_exc=None,
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=True,
@@ -615,7 +706,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
@@ -648,7 +739,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
@@ -688,7 +779,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
@@ -712,7 +803,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=True,
@@ -749,7 +840,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
         with ExceptBaseException(
                 qualname='WithContextManager.test',
                 custom_logger=None,
-                execute_on_exc=False,  #: Not Implemented
+                execute_on_exc=None,
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
@@ -779,7 +870,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
         with ExceptBaseException(
                 qualname='WithContextManager.test',
                 custom_logger=None,
-                execute_on_exc=False,  #: Not Implemented
+                execute_on_exc=None,
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
@@ -800,7 +891,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
         with ExceptBaseException(
                 qualname='WithContextManager.test',
                 custom_logger=None,
-                execute_on_exc=False,  #: Not Implemented
+                execute_on_exc=None,
                 exit_code=1,
                 exit_on_exc=False,
                 print_trace=False,
@@ -830,7 +921,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=False,
@@ -853,7 +944,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=1,
                     exit_on_exc=False,
                     print_trace=False,
@@ -890,7 +981,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
         with ExceptBaseException(
                 qualname='WithContextManager.test',
                 custom_logger=None,
-                execute_on_exc=False,  #: Not Implemented
+                execute_on_exc=None,
                 exit_code=10,
                 exit_on_exc=True,
                 print_trace=False,
@@ -923,7 +1014,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                 with ExceptBaseException(
                         qualname='WithContextManager.test',
                         custom_logger=None,
-                        execute_on_exc=False,  #: Not Implemented
+                        execute_on_exc=None,
                         exit_code=10,
                         exit_on_exc=True,
                         print_trace=False,
@@ -940,7 +1031,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
@@ -966,7 +1057,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                 with ExceptBaseException(
                         qualname='WithContextManager.test',
                         custom_logger=None,
-                        execute_on_exc=False,  #: Not Implemented
+                        execute_on_exc=None,
                         exit_code=10,
                         exit_on_exc=True,
                         print_trace=False,
@@ -984,7 +1075,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
@@ -1016,7 +1107,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
@@ -1039,7 +1130,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
             with ExceptBaseException(
                     qualname='WithContextManager.test',
                     custom_logger=None,
-                    execute_on_exc=False,  #: Not Implemented
+                    execute_on_exc=None,
                     exit_code=10,
                     exit_on_exc=True,
                     print_trace=False,
@@ -1061,6 +1152,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                 f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError: Dummy ValueError 2"')
 
 #: [ ] ToDo: Add tests for execute and pass excepted Exception
+
 
 #: ------------------------------------------------- BODY --------------------------------------------------
 if __name__ == '__main__':

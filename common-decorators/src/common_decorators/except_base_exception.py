@@ -9,7 +9,7 @@ import traceback
 from dataclasses import dataclass, field, fields
 from functools import wraps
 from logging import Logger
-from typing import Optional, Any
+from typing import Optional, Union, Callable
 
 __all__ = [
     'ExceptBaseException'
@@ -34,9 +34,10 @@ class ExceptBaseException:
         custom_logger (Logger): Default None
             logger which should be used to log/print messages
             (from logging library)
-        execute_on_exc (bool): Default False
-            if True, it will execute self.execution_list()
-            executed after logger and before trace
+        execute_on_exc (callable): Default None
+            if provided callable, it will be executed after logger and before trace
+        execute_on_exc_params (Tuple[List[Any], Dict[Any, Any]]): Default None
+            if provided it will be used as args, kwargs for execute_on_exc callable
         exit_code (int): Default 1
             provide exit code, from 0-255
         exit_on_exc (bool): Default False
@@ -60,8 +61,9 @@ class ExceptBaseException:
     """
 
     qualname: str = field(default_factory=lambda: ExceptBaseException.__init__.__qualname__)
-    custom_logger: Optional[Logger] = None
-    execute_on_exc: bool = field(default=False)
+    custom_logger: Optional[Logger] = field(default=None)
+    execute_on_exc: Optional[Callable] = field(default=None)
+    execute_on_exc_params: Optional[tuple] = field(default=None)
     exit_code: int = field(default=1)
     exit_on_exc: bool = field(default=False)
     print_trace: bool = field(default=True)
@@ -106,12 +108,24 @@ class ExceptBaseException:
                 #: logger
                 self.__internal_logger(self.level, text)
 
-                if self.execute_on_exc:
+                if self.execute_on_exc is not None:
                     self.__internal_logger(
                         'debug',
-                        f'{exc_type.__name__}: Executing custom program'
+                        f'{exc_type.__name__}: Executing custom method'
                     )
-                    self.execution_list()
+                    args: list = []
+                    kwargs: dict = {}
+                    for item in self.execute_on_exc_params:
+                        if isinstance(item, list):
+                            args.extend(item)
+                        elif isinstance(item, dict):
+                            kwargs.update(item)
+                        elif isinstance(item, Union[str, int, callable]):
+                            args.append(item)
+                        else:
+                            raise TypeError(f'{self.__class__.__qualname__}(): Unexpected type in execute_on_exc_params')
+
+                    self.execute_on_exc(*args, **kwargs)
 
                 #: Traceback
                 if self.print_trace:
@@ -171,12 +185,6 @@ class ExceptBaseException:
         if name in attributes.keys() and not isinstance(value, attributes[name]):
             raise TypeError(f'Expected "{name}" to be of type "{attributes[name]}", got {type(value).__name__}')
 
-        # #: If some attributes must have specific values
-        # if name == "example":
-        #     value = value.lower()
-        #     if value not in ['A', 'B']:
-        #         raise ValueError(f"Expected '{name}' to be in {['A', 'B']}")
-
         if hasattr(super(), '__setattr__'):
             super().__setattr__(name, value)
 
@@ -225,8 +233,6 @@ class ExceptBaseException:
         traceback.print_exception(exc_type, exc_value, traceback_obj)
         print(f'{"=" * (self.__rep + 1)} Traceback END {"=" * (self.__rep + 1)}')
 
-    def execution_list(self) -> Any:
-        raise NotImplementedError()
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
 

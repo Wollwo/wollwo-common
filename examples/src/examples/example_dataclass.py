@@ -4,7 +4,7 @@ All rights reserved.
 """
 #: ------------------------------------------------ IMPORTS ------------------------------------------------
 from dataclasses import dataclass, asdict, field, fields, MISSING
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any, Tuple
 
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 
@@ -27,6 +27,10 @@ class Example:
                 a: str
 
              e = Example(**{k.name: kwargs[k.name] for k in fields(Example) if k.name in kwargs})
+
+    Raises:
+        TypeError:
+
 
     """
     one: str
@@ -67,6 +71,18 @@ class Example:
                 raise ValueError(f"Expected '{name}' to be in {list(self.__two.keys())}")
 
         super().__setattr__(name, value)
+
+    def get(self, key: str | None) -> Union[Dict[str, Any], str, None]:
+        """
+        return attributes and values of dataclass as dict
+        if key is specified
+
+        Attr:
+            key (str): if specccified, return
+        """
+        my_dict = asdict(self)
+
+        return my_dict.copy() if key is None else my_dict.get(key, None)
 
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
