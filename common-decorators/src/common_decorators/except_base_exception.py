@@ -38,11 +38,10 @@ class ExceptBaseException:
             if provided callable, it will be executed after logger and before trace
         execute_on_exc_params (Tuple[List[Any], Dict[Any, Any]]): Default None
             if provided it will be used as args, kwargs for execute_on_exc callable
-        exit_code (int): Default 1
+        exit_on_exc (int): Default None
             provide exit code, from 0-255
-        exit_on_exc (bool): Default False
-            exit on exception, return provided exit code
-            if True, silence_exc will not be executed
+            If value is provided, exception will exit with provided code
+            if not None, silence_exc will not be executed
         print_trace (bool): Default True
             will print traceback before raisin/exiting/silencing exception
             print trace just before exit or silence
@@ -64,8 +63,7 @@ class ExceptBaseException:
     custom_logger: Optional[Logger] = field(default=None)
     execute_on_exc: Optional[Callable] = field(default=None)
     execute_on_exc_params: Optional[tuple] = field(default=None)
-    exit_code: int = field(default=1)
-    exit_on_exc: bool = field(default=False)
+    exit_on_exc: Optional[int] = field(default=None)
     print_trace: bool = field(default=True)
     silence_exc: bool = field(default=False)
     pass_exc: bool = field(default=False)
@@ -136,12 +134,12 @@ class ExceptBaseException:
                     self.__print_traceback(exc_type, exc_value, exc_tb)
 
                 #: Exit
-                if self.exit_on_exc:
+                if self.exit_on_exc is not None:
                     self.__internal_logger(
                         'error',
-                        f'{exc_type.__name__}: Exiting with {self.exit_code}'
+                        f'{exc_type.__name__}: Exiting with {self.exit_on_exc}'
                     )
-                    sys.exit(self.exit_code)
+                    sys.exit(self.exit_on_exc)
 
                 #: silence or raise if not passed
                 if not self.pass_exc:

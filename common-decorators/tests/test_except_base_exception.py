@@ -58,8 +58,7 @@ class BaseClass:
         qualname='ExceptException.__init__',
         custom_logger=None,
         execute_on_exc=None,
-        exit_code=1,
-        exit_on_exc=False,
+        exit_on_exc=None,
         print_trace=True,
         silence_exc=False,
         pass_exc=False
@@ -75,8 +74,7 @@ class BaseClass:
         qualname='ExceptException.__init__',
         custom_logger=None,
         execute_on_exc=None,
-        exit_code=1,
-        exit_on_exc=False,
+        exit_on_exc=None,
         print_trace=False,
         silence_exc=True,
         pass_exc=False
@@ -94,8 +92,7 @@ class BaseClass:
         qualname='ExceptException.__init__',
         custom_logger=None,
         execute_on_exc=None,
-        exit_code=10,
-        exit_on_exc=True,
+        exit_on_exc=10,
         print_trace=False,
         silence_exc=False,
         pass_exc=False
@@ -115,8 +112,7 @@ class BaseClass:
         custom_logger=None,
         execute_on_exc=dummy_execution,
         execute_on_exc_params=(['Dummy'],),
-        exit_code=1,
-        exit_on_exc=False,
+        exit_on_exc=None,
         print_trace=False,
         silence_exc=False,
         pass_exc=True
@@ -177,8 +173,7 @@ def base_method(exc: int) -> int:
     custom_logger=None,
     execute_on_exc=None,
     execute_on_exc_params=None,
-    exit_code=1,
-    exit_on_exc=False,
+    exit_on_exc=None,
     print_trace=True,
     silence_exc=False,
     pass_exc=False
@@ -196,8 +191,7 @@ def method_01_default_values(exc: int) -> int:
     custom_logger=None,
     execute_on_exc=None,
     execute_on_exc_params=None,
-    exit_code=1,
-    exit_on_exc=False,
+    exit_on_exc=None,
     print_trace=False,
     silence_exc=True,
     pass_exc=False
@@ -217,8 +211,7 @@ def method_02_notrace_silence(exc: int) -> int:
     custom_logger=None,
     execute_on_exc=None,
     execute_on_exc_params=None,
-    exit_code=10,
-    exit_on_exc=True,
+    exit_on_exc=10,
     print_trace=False,
     silence_exc=False,
     pass_exc=False
@@ -238,8 +231,7 @@ def method_03_notrace_exit(exc: int) -> int:
     custom_logger=None,
     execute_on_exc=dummy_execution,
     execute_on_exc_params=(['Dummy'], {}),
-    exit_code=1,
-    exit_on_exc=False,
+    exit_on_exc=None,
     print_trace=False,
     silence_exc=False,
     pass_exc=True
@@ -675,8 +667,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                 qualname='WithContextManager.test',
                 custom_logger=None,
                 execute_on_exc=None,
-                exit_code=1,
-                exit_on_exc=False,
+                exit_on_exc=None,
                 print_trace=True,
                 silence_exc=False,
                 pass_exc=False
@@ -707,8 +698,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=True,
                     silence_exc=False,
                     pass_exc=False
@@ -740,8 +730,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=True,
                     silence_exc=False,
                     pass_exc=False
@@ -780,8 +769,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=True,
                     silence_exc=False,
                     pass_exc=False
@@ -804,8 +792,7 @@ def test_exceptexception_class_as_contextmanager_01(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=True,
                     silence_exc=False,
                     pass_exc=False
@@ -841,8 +828,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 qualname='WithContextManager.test',
                 custom_logger=None,
                 execute_on_exc=None,
-                exit_code=1,
-                exit_on_exc=False,
+                exit_on_exc=None,
                 print_trace=False,
                 silence_exc=True,
                 pass_exc=False
@@ -871,8 +857,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 qualname='WithContextManager.test',
                 custom_logger=None,
                 execute_on_exc=None,
-                exit_code=1,
-                exit_on_exc=False,
+                exit_on_exc=None,
                 print_trace=False,
                 silence_exc=True,
                 pass_exc=False
@@ -892,8 +877,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                 qualname='WithContextManager.test',
                 custom_logger=None,
                 execute_on_exc=None,
-                exit_code=1,
-                exit_on_exc=False,
+                exit_on_exc=None,
                 print_trace=False,
                 silence_exc=True,
                 pass_exc=False
@@ -922,8 +906,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=False,
                     silence_exc=True,
                     pass_exc=False
@@ -945,8 +928,7 @@ def test_exceptexception_class_as_contextmanager_02(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=1,
-                    exit_on_exc=False,
+                    exit_on_exc=None,
                     print_trace=False,
                     silence_exc=True,
                     pass_exc=False
@@ -982,8 +964,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                 qualname='WithContextManager.test',
                 custom_logger=None,
                 execute_on_exc=None,
-                exit_code=10,
-                exit_on_exc=True,
+                exit_on_exc=None,
                 print_trace=False,
                 silence_exc=False,
                 pass_exc=False
@@ -1015,8 +996,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                         qualname='WithContextManager.test',
                         custom_logger=None,
                         execute_on_exc=None,
-                        exit_code=10,
-                        exit_on_exc=True,
+                        exit_on_exc=10,
                         print_trace=False,
                         silence_exc=False,
                         pass_exc=False
@@ -1032,8 +1012,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=10,
-                    exit_on_exc=True,
+                    exit_on_exc=10,
                     print_trace=False,
                     silence_exc=False,
                     pass_exc=False
@@ -1058,8 +1037,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                         qualname='WithContextManager.test',
                         custom_logger=None,
                         execute_on_exc=None,
-                        exit_code=10,
-                        exit_on_exc=True,
+                        exit_on_exc=10,
                         print_trace=False,
                         silence_exc=False,
                         pass_exc=False
@@ -1076,8 +1054,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=10,
-                    exit_on_exc=True,
+                    exit_on_exc=10,
                     print_trace=False,
                     silence_exc=False,
                     pass_exc=False
@@ -1108,8 +1085,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=10,
-                    exit_on_exc=True,
+                    exit_on_exc=10,
                     print_trace=False,
                     silence_exc=False,
                     pass_exc=False
@@ -1131,8 +1107,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
                     qualname='WithContextManager.test',
                     custom_logger=None,
                     execute_on_exc=None,
-                    exit_code=10,
-                    exit_on_exc=True,
+                    exit_on_exc=10,
                     print_trace=False,
                     silence_exc=False,
                     pass_exc=False
