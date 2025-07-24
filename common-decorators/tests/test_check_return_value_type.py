@@ -8,7 +8,8 @@ import os
 import pytest
 import re
 
-from typing import Union
+from typing import Union, Any
+from dataclasses import dataclass
 
 #: Add the src directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
@@ -19,6 +20,17 @@ from common_decorators.check_return_value_type import CheckReturnValueType
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------
+@dataclass
+class Test:
+    a: Any
+
+    @CheckReturnValueType(bool, use_annotation=True)
+    def test_str(self) -> str:
+        return self.a
+
+    @CheckReturnValueType(bool, use_annotation=True)
+    def test_bool(self):
+        return self.a
 
 
 #: ------------------------------------------------ METHODS ------------------------------------------------
@@ -50,6 +62,14 @@ def test_checkreturnvaluetype_class_as_decorator():
 
     with pytest.raises(TypeError, match=re.escape("Expected return type \"typing.Union[str, int]\", got \"<class 'list'>\"")):
         test(['string', 000000])
+
+    test = Test(123)
+
+    with pytest.raises(TypeError, match='Expected return type "<class \'str\'>", got "<class \'int\'>"'):
+        test.test_str()
+
+    with pytest.raises(TypeError, match='Expected return type "<class \'bool\'>", got "<class \'int\'>"'):
+        test.test_bool()
 
 
 def test_checkreturnvaluetype_class_as_contextmanager():

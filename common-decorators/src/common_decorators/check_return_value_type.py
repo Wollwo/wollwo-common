@@ -59,6 +59,8 @@ class CheckReturnValueType:
             if (isinstance(exc_type(), TypeError)
                     and exc_type.__name__ == TypeError.__name__):
                 return False
+            pass
+        pass
 
     def check(self, func, *args, **kwargs):
         """
@@ -81,8 +83,6 @@ class CheckReturnValueType:
 
         #: check return value
         if not isinstance(result, expected_func_type):
-            # if self.raise_exception:
-            #     raise TypeError(f"Expected return type {self.expected_type}, got {type(result)}")
             raise TypeError(f'Expected return type "{expected_func_type}", got "{type(result)}"')
 
         return result
