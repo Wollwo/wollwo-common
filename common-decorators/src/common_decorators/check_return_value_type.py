@@ -5,7 +5,7 @@ All rights reserved.
 #: ------------------------------------------------ IMPORTS ------------------------------------------------
 from functools import wraps
 from inspect import isfunction
-from typing import Any, Type
+from typing import Any, Type, Optional
 
 __all__ = [
     'CheckReturnValueType'
@@ -26,7 +26,7 @@ class CheckReturnValueType:
     """
     def __init__(
             self,
-            expected_type: Type[Any],
+            expected_type: Optional[Type[Any]],
             /, *,
             use_annotation: bool = False
             # raise_exception: bool = True
@@ -82,8 +82,10 @@ class CheckReturnValueType:
         result = func(*args, **kwargs)
 
         #: check return value
-        if not isinstance(result, expected_func_type):
+        if expected_func_type is not None and not isinstance(result, expected_func_type):
             raise TypeError(f'Expected return type "{expected_func_type}", got "{type(result)}"')
+        elif expected_func_type is None and expected_func_type is not result:
+            raise TypeError(f'Expected return type "NoneType", got "{type(result)}"')
 
         return result
 
