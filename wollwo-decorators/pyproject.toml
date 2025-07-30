@@ -1,6 +1,6 @@
 [project]
-name = "common-decorators"
-version = "0.1.8"
+name = "wollwo-decorators"
+version = "0.1.9"
 description = ""
 authors = [
     {name = "wollwo",email = "perzelmichal@gmail.com"}
@@ -15,7 +15,7 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.poetry]
-packages = [{include = "common_decorators", from = "src"}]
+packages = [{include = "wollwo_decorators", from = "src"}]
 
 
 [tool.poetry.group.dev.dependencies]
