@@ -5,6 +5,7 @@ description = "common libraries to enhance base workflow, Some decorators/contex
 authors = [
     {name = "Michal Perzel",email = "perzelmichal@gmail.com"}
 ]
+homepage = "https://github.com/Wollwo/wollwo-common"
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
