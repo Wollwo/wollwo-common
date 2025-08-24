@@ -19,3 +19,6 @@ debug*
 **/debug*
 debug/
 **/debug/
+
+#: Personal HowTo
+HowTo.md

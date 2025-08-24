@@ -1,23 +1,23 @@
 [project]
 name = "wollwo-common"
-version = "0.1.0"
+version = "0.1.1"
 description = "common libraries to enhance base workflow, Some decorators/context managers for your code and others"
 authors = [
     {name = "Michal Perzel",email = "perzelmichal@gmail.com"}
 ]
-homepage = "https://github.com/Wollwo/wollwo-common"
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
-
 readme = "README.md"
 requires-python = ">=3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-
 dependencies = [
 ]
+
+[project.urls]
+homepage = "https://github.com/Wollwo/wollwo-common"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
