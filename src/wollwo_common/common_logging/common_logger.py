@@ -1,7 +1,9 @@
 """
-Copyright (c) 2025 perzelmichal@gmail.com
-All rights reserved.
+Copyright (c) ${YEAR} by Michal Perzel. All rights reserved.
+
+License: MIT
 """
+
 #: ------------------------------------------------ IMPORTS ------------------------------------------------
 import logging
 import sys

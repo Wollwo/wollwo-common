@@ -1,8 +1,12 @@
 # WOLLWO COMMON
 
-## CUSTOM_LOGGING
+"""TEXT
+Copyright (c) 2025 by Michal Perzel. All rights reserved.
 
-## HOW TO WITH POETRY
+License: MIT
+"""
+
+## HOW TO, WITH POETRY
 
 ### Bump package versions
 ```BASH
@@ -70,3 +74,7 @@ poetry show -T | awk '{print $1"="$2}'  #: Top level dependencies
 ```BASH
 poetry env activate
 ```
+
+## CUSTOM_LOGGING
+
+## WOLLWO_DECORATORS
