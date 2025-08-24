@@ -3,15 +3,11 @@ Copyright (c) 2025 perzelmichal@gmail.com
 All rights reserved.
 """
 #: ------------------------------------------------ IMPORTS ------------------------------------------------
-import os
 import sys
 import pytest
-import re
 
 from contextlib import contextmanager
 from io import StringIO
-from typing import Optional
-from logging import Logger
 
 #: Add the src directory to the Python path
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
@@ -1126,7 +1122,7 @@ def test_exceptexception_class_as_contextmanager_03(exc_value, capsys):
         assert (captured.out.splitlines()[2] ==
                 f'DEBUG: WithContextManager.test : Passing on raised exception: "ValueError: Dummy ValueError 2"')
 
-#: [ ] ToDo: Add tests for execute and pass excepted Exception
+#: [ ] ToDo: Add wollwo_decorators for execute and pass excepted Exception
 
 
 #: ------------------------------------------------- BODY --------------------------------------------------

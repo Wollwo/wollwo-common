@@ -1,6 +1,8 @@
-# CUSTOM_LOGGING
+# WOLLWO COMMON
 
-## HOW TO
+## CUSTOM_LOGGING
+
+## HOW TO WITH POETRY
 
 ### Bump package versions
 ```BASH
@@ -26,7 +28,8 @@ poetry build
 
 ### New poetry Project
 ```BASH
-poetry new test  #: create project
+poetry init      #: in current folder initialize new poetry project
+poetry new test  #: create new project
 cd test
 poetry env info  #: check project env info
 poetry env info --path
@@ -46,7 +49,7 @@ poetry add package_name@^0.1.0  #: greater version than 0.1.0, but less than nex
 poetry add package_name@<0.1.0  #: lesser version than specified
 poetry remove package_name
 
-poetry add --dev pacckage       #: add package necessary only for development
+poetry add --dev package       #: add package necessary only for development
 ```
 
 ### install project with poetry as python library
