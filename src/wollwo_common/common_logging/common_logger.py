@@ -1,5 +1,5 @@
 """
-Copyright (c) ${YEAR} by Michal Perzel. All rights reserved.
+Copyright (c) 2025 by Michal Perzel. All rights reserved.
 
 License: MIT
 """

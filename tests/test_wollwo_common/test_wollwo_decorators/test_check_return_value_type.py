@@ -1,5 +1,5 @@
 """
-Copyright (c) ${YEAR} by Michal Perzel. All rights reserved.
+Copyright (c) 2025 by Michal Perzel. All rights reserved.
 
 License: MIT
 """
@@ -13,10 +13,6 @@ import re
 from typing import Union, Any
 from dataclasses import dataclass
 
-#: Add the src directory to the Python path
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-# from wollwo_decorators.check_return_value_type import CheckReturnValueType
 from wollwo_common import CheckReturnValueType
 
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
@@ -24,7 +20,7 @@ from wollwo_common import CheckReturnValueType
 
 #: ------------------------------------------------- CLASS -------------------------------------------------
 @dataclass
-class Test:
+class MyTest:
     a: Any
 
     @CheckReturnValueType(bool, use_annotation=True)
@@ -76,7 +72,7 @@ def test_checkreturnvaluetype_class_as_decorator():
     )):
         test(['string', 000000])
 
-    test = Test(123)
+    test = MyTest(123)
 
     with pytest.raises(TypeError, match='Expected return type "<class \'str\'>", got "<class \'int\'>"'):
         test.test_str()

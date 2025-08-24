@@ -3,7 +3,7 @@ name = "wollwo-common"
 version = "0.1.0"
 description = "common libraries to enhance base workflow, Some decorators/context managers for your code and others"
 authors = [
-    {name = "wollwo",email = "perzelmichal@gmail.com"}
+    {name = "Michal Perzel",email = "perzelmichal@gmail.com"}
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
@@ -16,7 +16,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "logging (>=0.4.9.6,<0.5.0.0)"
 ]
 
 [tool.pytest.ini_options]

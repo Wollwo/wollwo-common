@@ -1,5 +1,5 @@
 """
-Copyright (c) ${YEAR} by Michal Perzel. All rights reserved.
+Copyright (c) 2025 by Michal Perzel. All rights reserved.
 
 License: MIT
 """
@@ -11,10 +11,6 @@ import pytest
 from contextlib import contextmanager
 from io import StringIO
 
-#: Add the src directory to the Python path
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-# from wollwo_decorators.except_base_exception import ExceptBaseException
 from wollwo_common import ExceptBaseException
 
 
