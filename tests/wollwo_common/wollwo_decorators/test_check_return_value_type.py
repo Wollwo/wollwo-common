@@ -14,9 +14,10 @@ from typing import Union, Any
 from dataclasses import dataclass
 
 #: Add the src directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from wollwo_decorators.check_return_value_type import CheckReturnValueType
+# from wollwo_decorators.check_return_value_type import CheckReturnValueType
+from wollwo_common import CheckReturnValueType
 
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
 

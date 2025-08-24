@@ -13,10 +13,10 @@ from functools import wraps
 from logging import Logger
 from typing import Optional, Union, Callable
 
-__all__ = [
-    'ExceptBaseException'
-]
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
+__all__ = (
+    'ExceptBaseException'
+)
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------

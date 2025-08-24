@@ -9,11 +9,10 @@ from functools import wraps
 from inspect import isfunction
 from typing import Any, Type, Optional
 
-__all__ = [
-    'CheckReturnValueType'
-]
-
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
+__all__ = (
+    'CheckReturnValueType'
+)
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------

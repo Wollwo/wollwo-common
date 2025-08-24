@@ -8,10 +8,14 @@ License: MIT
 import logging
 
 from dataclasses import dataclass, field, fields, asdict, MISSING
-from .common_logger import common_logger
 from typing import Optional
 
+from .common_logger import common_logger
+
 #: ----------------------------------------------- VARIABLES -----------------------------------------------
+__all__ = (
+    'CommonLogLineBase'
+)
 
 
 #: ------------------------------------------------- CLASS -------------------------------------------------
