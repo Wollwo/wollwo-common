@@ -20,7 +20,7 @@ class CheckReturnValueType:
     Functions as decorator and context manager for checking if
     return value of wrapped function return value of expected type
 
-    raises:
+    Raises:
         TypeError
 
     """
@@ -33,7 +33,7 @@ class CheckReturnValueType:
     ):
         """
 
-        Attr:
+        Parameters:
             expected_type (Type[Any]):
                 what type must be returned value of wrapped method
             use_annotation (bool):
@@ -67,7 +67,7 @@ class CheckReturnValueType:
         run wrapped function, check if return value of correct type
         raise TypeError exception if not (raise_exception=True)
 
-        returns:
+        Returns:
             func
         """
         if not isfunction(func):

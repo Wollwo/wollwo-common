@@ -15,7 +15,7 @@ from typing import Optional
 #: ------------------------------------------------- CLASS -------------------------------------------------
 @dataclass
 class CommonLogLineBase:
-    """Reusable common class handling logging"""
+    """Reusable wollwo-common class handling logging"""
     logger_name: str
     logger_level: str = field(default='INFO')
     logger_text_format: str = field(default='%(asctime)s; %(name)s; %(message)s')

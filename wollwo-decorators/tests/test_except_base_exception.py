@@ -16,7 +16,7 @@ from logging import Logger
 #: Add the src directory to the Python path
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from common_decorators.except_base_exception import ExceptBaseException
+from wollwo_decorators.except_base_exception import ExceptBaseException
 
 
 #: ----------------------------------------------- VARIABLES -----------------------------------------------

@@ -1,12 +1,19 @@
 [project]
 name = "wollwo-decorators"
-version = "0.1.9"
-description = ""
+version = "0.1.10"
+description = "Some decorators/context managers for your code"
 authors = [
     {name = "wollwo",email = "perzelmichal@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
 dependencies = [
 ]
 
